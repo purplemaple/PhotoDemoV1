@@ -1,0 +1,120 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:PhotoDemoV1.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:views="clr-namespace:PhotoDemoV1.Views"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="PhotoDemoV1.Views.MainWindow"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="PhotoDemoV1"
+		SystemDecorations="None"
+		x:DataType="vm:MainWindowLayoutViewModel">
+	<Design.DataContext>
+		<!-- This only sets the DataContext for the previewer in an IDE,
+         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+		<vm:MainWindowLayoutViewModel/>
+	</Design.DataContext>
+
+	<Window.DataTemplates>
+		<DataTemplate DataType="vm:NavigationViewModel">
+			<Button Width="{Binding $parent.Width}"
+					Background="Transparent">
+				<Border Margin="0, 5"
+						BorderThickness="0">
+					<DockPanel>
+						<Image Source="{Binding Icon}"
+							   Width="25"/>
+						<TextBlock DockPanel.Dock="Right"
+								   Text="{Binding Text}"/>
+					</DockPanel>
+				</Border>
+			</Button>
+		</DataTemplate>
+	</Window.DataTemplates>
+
+	<DockPanel>
+		<!--导航栏-->
+		<StackPanel>
+			<!--TODO: 这里放图标-->
+			<Border Width="120"
+					Height="80">
+				
+			</Border>
+			
+			<Border DockPanel.Dock="Left"
+				Width="120"
+				PointerPressed="Border_PointerPressed"
+				DoubleTapped="Border_DoubleTapped">
+				<DockPanel>
+					<ItemsControl ItemsSource="{Binding Navigations}"
+								  ItemTemplate="">
+						<ItemsControl.ItemsPanel>
+							<ItemsPanelTemplate>
+								<!--纵向堆叠，不考虑空间是否足够或者是否充满空间-->
+								<StackPanel/>
+							</ItemsPanelTemplate>
+						</ItemsControl.ItemsPanel>
+					</ItemsControl>
+				</DockPanel>
+			</Border>
+		</StackPanel>
+		
+
+		<DockPanel >
+			<!--顶栏-->
+			<Border DockPanel.Dock="Top"
+					Height="25"
+					Width="{Binding $parent.Width}"
+					Background="#C86EFF"
+					PointerPressed="Border_PointerPressed"
+					DoubleTapped="Border_DoubleTapped">
+				<DockPanel HorizontalAlignment="Right" >
+					<!--置顶按钮-->
+					<Button Content="↑"
+							Width="40"
+							CornerRadius="0"
+							Background="Transparent"
+							HorizontalContentAlignment="Center"
+							BorderThickness="0"
+							BorderBrush="Transparent"
+							Click="TopWindow_Click"/>
+
+					<!--最小化按钮-->
+					<Button Content="-"
+							Width="40"
+							CornerRadius="0"
+							Background="Transparent"
+							HorizontalContentAlignment="Center"
+							BorderThickness="0"
+							BorderBrush="Transparent"
+							Click="MinimizeWindow_Click"/>
+
+					<!--最大化/还原按钮-->
+					<Button Content="□"
+							Width="40"
+							CornerRadius="0"
+							Background="Transparent"
+							HorizontalContentAlignment="Center"
+							BorderThickness="0"
+							BorderBrush="Transparent"
+							Click="MaximizeOrRestoreWindow_Click"/>
+
+					<!--关闭按钮-->
+					<Button Content="X"
+							Width="40"
+							CornerRadius="0"
+							Background="Transparent"
+							HorizontalContentAlignment="Center"
+							BorderThickness="0"
+							BorderBrush="Transparent"
+							Click="CloseWindow_Click"/>
+				</DockPanel>
+			</Border>
+			
+			<!--主要内容显示区-->
+			<views:MainView />
+
+		</DockPanel>
+	</DockPanel>
+</Window>
