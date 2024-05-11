@@ -17,9 +17,11 @@
 	</Design.DataContext>
 
 	<Window.DataTemplates>
+		<!--导航栏数据模板-->
 		<DataTemplate DataType="vm:NavigationViewModel">
 			<Button Width="{Binding $parent.Width}"
-					Background="Transparent">
+					Background="Transparent"
+					Command="{Binding Command}">
 				<Border Margin="0, 5"
 						BorderThickness="0">
 					<DockPanel>
@@ -43,12 +45,11 @@
 			</Border>
 			
 			<Border DockPanel.Dock="Left"
-				Width="120"
-				PointerPressed="Border_PointerPressed"
-				DoubleTapped="Border_DoubleTapped">
+					Width="120"
+					PointerPressed="Border_PointerPressed"
+					DoubleTapped="Border_DoubleTapped">
 				<DockPanel>
-					<ItemsControl ItemsSource="{Binding Navigations}"
-								  ItemTemplate="">
+					<ItemsControl ItemsSource="{Binding Navigations}">
 						<ItemsControl.ItemsPanel>
 							<ItemsPanelTemplate>
 								<!--纵向堆叠，不考虑空间是否足够或者是否充满空间-->

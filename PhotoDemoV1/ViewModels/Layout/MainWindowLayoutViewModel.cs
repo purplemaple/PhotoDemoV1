@@ -3,6 +3,7 @@ using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -22,26 +23,37 @@ public class MainWindowLayoutViewModel : ViewModelBase
 
     public MainWindowLayoutViewModel()
     {
-        Navigations = new()
-        {
+        Navigations =
+        [
             new NavigationViewModel
             {
                 Text = "主页",
+                NavigateCommand = ReactiveCommand.Create<Unit>(Navigate),
+                Command = Navigate
             },
 
             new NavigationViewModel
             {
-                Text = "设置"
+                Text = "设置",
+                //NavigateCommand = ReactiveCommand.Create<Unit>(Navigate)
             },
 
             new NavigationViewModel
             {
-                Text = "关于"
+                Text = "关于",
+                //NavigateCommand = ReactiveCommand.Create<Unit>(Navigate)
             },
-        };
+        ];
     }
 
+    //public ReactiveCommand<Unit, Unit> NavigateCommand { get; }
+
     public void Navigate()
+    {
+
+    }
+
+    public void Navigate(Unit parameter)
     {
 
     }
@@ -53,5 +65,7 @@ public class NavigationViewModel
 
     public string? Text { get; set; }
 
-    public ICommand Command { get; set; }
+    public ReactiveCommand<Unit, Unit> NavigateCommand { get; set; }
+
+    public Action Command { get; set; }
 }
