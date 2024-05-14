@@ -1,12 +1,11 @@
 using Avalonia.Controls;
 
-namespace PhotoDemoV1.Views
+namespace PhotoDemoV1.Views;
+
+public partial class MainView : UserControl
 {
-    public partial class MainView : UserControl
+    public MainView()
     {
-        public MainView()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

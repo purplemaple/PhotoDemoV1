@@ -1,7 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using PhotoDemoV1.ViewModels;
 
 namespace PhotoDemoV1.Views;
 
@@ -10,7 +9,6 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
-        this.DataContext = new MainWindowLayoutViewModel();
     }
 
     //ÖÃ¶¥´°¿Ú

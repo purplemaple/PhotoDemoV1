@@ -9,26 +9,25 @@
         Icon="/Assets/avalonia-logo.ico"
         Title="PhotoDemoV1"
 		SystemDecorations="None"
-		x:DataType="vm:MainWindowLayoutViewModel">
+		x:DataType="vm:MainWindowViewModel">
 	<Design.DataContext>
 		<!-- This only sets the DataContext for the previewer in an IDE,
          to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-		<vm:MainWindowLayoutViewModel/>
+		<vm:MainWindowViewModel/>
 	</Design.DataContext>
 
 	<Window.DataTemplates>
 		<!--导航栏数据模板-->
-		<DataTemplate DataType="vm:NavigationViewModel">
+		<DataTemplate DataType="vm:NavigationItemData">
 			<Button Width="{Binding $parent.Width}"
 					Background="Transparent"
-					Command="{Binding Command}">
+					Command="{Binding Command}"
+					CommandParameter="{Binding}">
 				<Border Margin="0, 5"
 						BorderThickness="0">
 					<DockPanel>
-						<Image Source="{Binding Icon}"
-							   Width="25"/>
-						<TextBlock DockPanel.Dock="Right"
-								   Text="{Binding Text}"/>
+						<Image Source="{Binding Icon}" Width="25"/>
+						<TextBlock DockPanel.Dock="Right" Text="{Binding Text}"/>
 					</DockPanel>
 				</Border>
 			</Button>
@@ -49,7 +48,7 @@
 					PointerPressed="Border_PointerPressed"
 					DoubleTapped="Border_DoubleTapped">
 				<DockPanel>
-					<ItemsControl ItemsSource="{Binding Navigations}">
+					<ItemsControl ItemsSource="{Binding NavigationItemDatas}">
 						<ItemsControl.ItemsPanel>
 							<ItemsPanelTemplate>
 								<!--纵向堆叠，不考虑空间是否足够或者是否充满空间-->
@@ -114,7 +113,7 @@
 			</Border>
 			
 			<!--主要内容显示区-->
-			<views:MainView />
+			<views:MainView DataContext="{Binding MainViewModel}"/>
 
 		</DockPanel>
 	</DockPanel>
