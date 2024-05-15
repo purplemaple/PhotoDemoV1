@@ -4,11 +4,16 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:views="clr-namespace:PhotoDemoV1.Views"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="740"
+		Width="1280"
+		Height="740"
+		WindowStartupLocation="CenterScreen"
+		ExtendClientAreaChromeHints="NoChrome"
+		ExtendClientAreaToDecorationsHint="True"
+		CornerRadius="10"
         x:Class="PhotoDemoV1.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
         Title="PhotoDemoV1"
-		SystemDecorations="None"
 		x:DataType="vm:MainWindowViewModel">
 	<Design.DataContext>
 		<!-- This only sets the DataContext for the previewer in an IDE,
@@ -33,7 +38,7 @@
 			</Button>
 		</DataTemplate>
 	</Window.DataTemplates>
-
+	
 	<DockPanel>
 		<!--导航栏-->
 		<StackPanel>
@@ -64,15 +69,17 @@
 		<DockPanel >
 			<!--顶栏-->
 			<Border DockPanel.Dock="Top"
-					Height="25"
+					Height="40"
 					Width="{Binding $parent.Width}"
+					CornerRadius="10"
 					Background="#C86EFF"
 					PointerPressed="Border_PointerPressed"
 					DoubleTapped="Border_DoubleTapped">
-				<DockPanel HorizontalAlignment="Right" >
+				<DockPanel HorizontalAlignment="Right" VerticalAlignment="Top">
 					<!--置顶按钮-->
 					<Button Content="↑"
 							Width="40"
+							Height="30"
 							CornerRadius="0"
 							Background="Transparent"
 							HorizontalContentAlignment="Center"
@@ -83,6 +90,7 @@
 					<!--最小化按钮-->
 					<Button Content="-"
 							Width="40"
+							Height="30"
 							CornerRadius="0"
 							Background="Transparent"
 							HorizontalContentAlignment="Center"
@@ -93,6 +101,7 @@
 					<!--最大化/还原按钮-->
 					<Button Content="□"
 							Width="40"
+							Height="30"
 							CornerRadius="0"
 							Background="Transparent"
 							HorizontalContentAlignment="Center"
@@ -103,6 +112,7 @@
 					<!--关闭按钮-->
 					<Button Content="X"
 							Width="40"
+							Height="30"
 							CornerRadius="0"
 							Background="Transparent"
 							HorizontalContentAlignment="Center"
@@ -113,7 +123,7 @@
 			</Border>
 			
 			<!--主要内容显示区-->
-			<views:MainView DataContext="{Binding MainViewModel}"/>
+			<views:MainView DataContext="{Binding MainViewModel}" />
 
 		</DockPanel>
 	</DockPanel>

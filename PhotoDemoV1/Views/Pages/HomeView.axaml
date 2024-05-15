@@ -2,8 +2,126 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             mc:Ignorable="d" d:DesignWidth="1160" d:DesignHeight="740"
              x:Class="PhotoDemoV1.Views.HomeView">
 
-	<TextBlock Text="HomePage!" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+	<UserControl.Styles>
+		<!-- 自定义滚动条样式 -->
+		<Style Selector="ScrollBar">
+			<Setter Property="Width" Value="4" />
+		</Style>
+		<Style Selector="ScrollBar /template/ Thumb">
+			<Setter Property="BorderThickness" Value="0" />
+			<Setter Property="CornerRadius" Value="5" />
+		</Style>
+
+		<!--给 Button 批量设置圆角的方法，仅需在 Button 上写 Classes="roundy" 即可-->
+		<Style Selector="Button.roundy /template/ ContentPresenter">
+			<Setter Property="CornerRadius" Value="5" />
+		</Style>
+
+		<!--使用新模板重绘 Button 的模板-->
+		<!--注：BorderBrush 和 BorderThickness 属性直接写在Button里而不写在 Border 里-->
+		<Style Selector="Button">
+			<Setter Property="Template">
+				<ControlTemplate>
+					<Border Background="{TemplateBinding Background}"
+							BorderBrush="{TemplateBinding BorderBrush}"
+							BorderThickness="{TemplateBinding BorderThickness}"
+							CornerRadius="5">
+						<ContentPresenter Content="{TemplateBinding Content}"
+										  Padding="{TemplateBinding Padding}"/>
+					</Border>
+				</ControlTemplate>
+			</Setter>
+		</Style>
+	</UserControl.Styles>
+
+	<Grid ColumnDefinitions="*, 320">
+
+		<!--左侧设置栏-->
+		<StackPanel>
+			<Border Height="180">
+				<DockPanel LastChildFill="False">
+					<TextBlock DockPanel.Dock="Top"
+							   Text="文件夹"
+							   FontSize="20"
+							   FontWeight="Bold"
+							   FontFamily="微软雅黑"
+							   VerticalAlignment="Top"
+							   Margin="5, 10"/>
+					<StackPanel DockPanel.Dock="Top"
+								Orientation="Horizontal">
+						<Button MinWidth="180"
+								MaxWidth="240"
+								Height="60"
+								Margin="5, 10"/>
+						
+						<Button MinWidth="180"
+								MaxWidth="240"
+								Height="60"
+								Margin="5, 10"/>
+					</StackPanel>
+				</DockPanel>
+			</Border>
+			<Border Height="240"
+					Background="#8F8F8F"/>
+		</StackPanel>
+
+		<!--右侧预览窗及启动按钮-->
+		<Border Grid.Column="1"
+				Width="320"
+				Margin="10, 5">
+			<Grid RowDefinitions="480, *, 80">
+				<UniformGrid Grid.Row="0"
+							 Rows="2"
+							 Height="480">
+					<Button Margin="5, 5, 10, 5"
+							Height="230"
+							Width="310"
+							BorderBrush="Gray"
+							BorderThickness="1">
+						<Image />
+					</Button>
+
+					<Button Margin="5, 5, 10, 5"
+							Height="230"
+							Width="310"
+							BorderBrush="Gray"
+							BorderThickness="1">
+						<Image/>
+					</Button>
+				</UniformGrid>
+
+				<ScrollViewer Grid.Row="1"
+							  VerticalScrollBarVisibility="Auto"
+							  Margin="5">
+					<TextBlock Text="测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试
+									 测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试
+									 测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试
+									 测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试
+									 测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试
+									 测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试"
+							   TextWrapping="Wrap"
+							   FontSize="18"
+							   FontFamily="微软雅黑"
+							   Margin="0, 0, 10, 0"/>
+				</ScrollViewer>
+
+				<Button Grid.Row="2"
+						Height="70"
+						Width="200"
+						CornerRadius="10"
+						Margin="0, 5"
+						HorizontalAlignment="Center">
+					<DockPanel VerticalAlignment="Center"
+							   HorizontalAlignment="Center">
+						<TextBlock Text="一键启动"
+								   FontSize="24"
+								   FontFamily="微软雅黑"/>
+					</DockPanel>
+				</Button>
+			</Grid>
+		</Border>
+	</Grid>
 </UserControl>

@@ -71,7 +71,7 @@ public class MainWindowViewModel : ViewModelBase
     }
 }
 
-public class NavigationItemData
+public sealed class NavigationItemData
 {
     public string? Icon { get; set; }
 
