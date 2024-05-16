@@ -3,8 +3,15 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="1160" d:DesignHeight="740"
-             x:Class="PhotoDemoV1.Views.HomeView">
-
+			 xmlns:vm="using:PhotoDemoV1.ViewModels"
+             x:Class="PhotoDemoV1.Views.HomeView"
+			 x:DataType="vm:HomeViewModel">
+	<Design.DataContext>
+		<!-- This only sets the DataContext for the previewer in an IDE,
+         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+		<vm:HomeViewModel/>
+	</Design.DataContext>
+	
 	<UserControl.Styles>
 		<!-- 自定义滚动条样式 -->
 		<Style Selector="ScrollBar">
@@ -22,7 +29,7 @@
 
 		<!--使用新模板重绘 Button 的模板-->
 		<!--注：BorderBrush 和 BorderThickness 属性直接写在Button里而不写在 Border 里-->
-		<Style Selector="Button">
+		<Style Selector="Button.roundy">
 			<Setter Property="Template">
 				<ControlTemplate>
 					<Border Background="{TemplateBinding Background}"
@@ -30,7 +37,8 @@
 							BorderThickness="{TemplateBinding BorderThickness}"
 							CornerRadius="5">
 						<ContentPresenter Content="{TemplateBinding Content}"
-										  Padding="{TemplateBinding Padding}"/>
+										  Padding="{TemplateBinding Padding}"
+										  VerticalContentAlignment="Center"/>
 					</Border>
 				</ControlTemplate>
 			</Setter>
@@ -41,7 +49,7 @@
 
 		<!--左侧设置栏-->
 		<StackPanel>
-			<Border Height="180">
+			<Border>
 				<DockPanel LastChildFill="False">
 					<TextBlock DockPanel.Dock="Top"
 							   Text="文件夹"
@@ -50,17 +58,36 @@
 							   FontFamily="微软雅黑"
 							   VerticalAlignment="Top"
 							   Margin="5, 10"/>
-					<StackPanel DockPanel.Dock="Top"
-								Orientation="Horizontal">
-						<Button MinWidth="180"
-								MaxWidth="240"
-								Height="60"
-								Margin="5, 10"/>
-						
-						<Button MinWidth="180"
-								MaxWidth="240"
-								Height="60"
-								Margin="5, 10"/>
+					<StackPanel DockPanel.Dock="Top">
+						<DockPanel Height="35"
+								   Margin="5">
+							<Button Width="140"
+									Height="{Binding $parent.Height}"
+									Content="输入目录..."
+									FontSize="16"
+									FontFamily="微软雅黑"
+									Command="{Binding OpenInputFolderCommand}"
+									CommandParameter="{Binding $self}"/>
+							<TextBox Margin="5"
+									 BorderThickness="0"
+									 CornerRadius="10"
+									 Text=""/>
+						</DockPanel>
+
+						<DockPanel Height="35"
+								   Margin="5">
+							<Button Width="140"
+									Height="{Binding $parent.Height}"
+									Content="输出目录..."
+									FontSize="16"
+									FontFamily="微软雅黑"
+									Command="{Binding OpenOutputFolderCommand}"
+									CommandParameter="{Binding $self}"/>
+							<TextBox Margin="5"
+									 BorderThickness="0"
+									 CornerRadius="10"
+									 Text="{Binding OutputPath}"/>
+						</DockPanel>
 					</StackPanel>
 				</DockPanel>
 			</Border>
