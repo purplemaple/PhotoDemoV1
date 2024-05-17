@@ -1,14 +1,17 @@
-﻿using Avalonia.Controls;
+﻿using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Platform.Storage;
+using Avalonia.VisualTree;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace PhotoDemoV1.Services;
 
-public class FileService
+public sealed class FileService
 {
     private static readonly Lazy<FileService> lazy = new(() => new FileService());
     public static FileService Instance => lazy.Value;
@@ -18,7 +21,7 @@ public class FileService
     /// </summary>
     /// <param name="view">基点视图</param>
     /// <returns>文件夹路径集合</returns>
-    public async Task<IReadOnlyList<IStorageFolder>> OpenFolderAsync(TopLevel view)
+    public async Task<IReadOnlyList<IStorageFolder>> OpenFolderAsync(Visual view)
     {
         FolderPickerOpenOptions options = new()
         {
@@ -33,8 +36,14 @@ public class FileService
     /// <param name="view">基点视图</param>
     /// <param name="options">自定义选项</param>
     /// <returns>文件夹路径集合</returns>
-    public async Task<IReadOnlyList<IStorageFolder>> OpenFolderAsync(TopLevel view, FolderPickerOpenOptions options)
+    public async Task<IReadOnlyList<IStorageFolder>> OpenFolderAsync(Visual view, FolderPickerOpenOptions options)
     {
-        return await view.StorageProvider.OpenFolderPickerAsync(options);
+        //通过传递过来的控件获取其顶层视图(一般为 MainWindow)
+        TopLevel? topLevel = (TopLevel?)view.GetVisualRoot();
+        if (topLevel is null)
+        {
+            throw new InvalidOperationException("找不到顶级视图");
+        }
+        return await topLevel.StorageProvider.OpenFolderPickerAsync(options);
     }
 }

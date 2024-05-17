@@ -23,9 +23,9 @@
 		</Style>
 
 		<!--给 Button 批量设置圆角的方法，仅需在 Button 上写 Classes="roundy" 即可-->
-		<Style Selector="Button.roundy /template/ ContentPresenter">
+		<!--<Style Selector="Button.roundy /template/ ContentPresenter">
 			<Setter Property="CornerRadius" Value="5" />
-		</Style>
+		</Style>-->
 
 		<!--使用新模板重绘 Button 的模板-->
 		<!--注：BorderBrush 和 BorderThickness 属性直接写在Button里而不写在 Border 里-->
@@ -43,6 +43,18 @@
 				</ControlTemplate>
 			</Setter>
 		</Style>
+
+		<Style Selector="Button.likeTextBlock" >
+			<Setter Property="Background" Value="Transparent"/>
+			<Setter Property="BorderThickness" Value="0, 0, 0, 1"/>
+			<Setter Property="BorderBrush" Value="Gray"/>
+			<Setter Property="CornerRadius" Value="0"/>
+			<Setter Property="Margin" Value="5, 0"/>
+			<Setter Property="FontSize" Value="14"/>
+			<Setter Property="FontFamily" Value="微软雅黑"/>
+			<Setter Property="Cursor" Value="Hand"/>
+		</Style>
+
 	</UserControl.Styles>
 
 	<Grid ColumnDefinitions="*, 320">
@@ -59,20 +71,34 @@
 							   VerticalAlignment="Top"
 							   Margin="5, 10"/>
 					<StackPanel DockPanel.Dock="Top">
-						<DockPanel Height="35"
-								   Margin="5">
+						<DockPanel Margin="5"
+								   MaxHeight="135">
 							<Button Width="140"
 									Height="{Binding $parent.Height}"
 									Content="输入目录..."
 									FontSize="16"
 									FontFamily="微软雅黑"
 									Command="{Binding OpenInputFolderCommand}"
-									CommandParameter="{Binding $self}"/>
-							<TextBox Margin="5"
-									 BorderThickness="0"
-									 CornerRadius="10"
-									 Text=""/>
+									CommandParameter="{Binding $self}"
+									VerticalAlignment="Top"/>
+							<ScrollViewer>
+								<ItemsControl ItemsSource="{Binding InputPaths}">
+									<ItemsControl.ItemTemplate>
+										<DataTemplate>
+											<!--注：(vm:HomeViewModel) 是对 DataContext 进行的显式类型转换-->
+											<!--详见 https://stackoverflow.com/questions/77280031/avalonia-ui-bind-button-command-in-a-listbox-to-the-viewmodel-instead-of-the-it-->
+											<Button Classes="likeTextBlock"
+													HorizontalAlignment="Stretch"
+													Width="{Binding $parent.Width}"
+													Content="{Binding}"
+													Command="{Binding $parent[ItemsControl].((vm:HomeViewModel)DataContext).OpenInputFolderCommand}"
+													CommandParameter="{Binding $self}"/>
+										</DataTemplate>
+									</ItemsControl.ItemTemplate>
+								</ItemsControl>
+							</ScrollViewer>
 						</DockPanel>
+						
 
 						<DockPanel Height="35"
 								   Margin="5">
@@ -83,10 +109,12 @@
 									FontFamily="微软雅黑"
 									Command="{Binding OpenOutputFolderCommand}"
 									CommandParameter="{Binding $self}"/>
-							<TextBox Margin="5"
-									 BorderThickness="0"
-									 CornerRadius="10"
-									 Text="{Binding OutputPath}"/>
+							<Button Classes="likeTextBlock" 
+									Command="{Binding OpenOutputFolderCommand}"
+									CommandParameter="{Binding $self}"
+									HorizontalAlignment="Stretch"
+									Width="{Binding $parent.Width}"
+									Content="{Binding OutputPath}"/>
 						</DockPanel>
 					</StackPanel>
 				</DockPanel>
@@ -140,7 +168,8 @@
 						Width="200"
 						CornerRadius="10"
 						Margin="0, 5"
-						HorizontalAlignment="Center">
+						HorizontalAlignment="Center"
+						Command="{Binding StartCommand}">
 					<DockPanel VerticalAlignment="Center"
 							   HorizontalAlignment="Center">
 						<TextBlock Text="一键启动"
