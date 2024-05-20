@@ -66,6 +66,6 @@ internal class HomeViewModel : ViewModelBase
 
     public async void StartCommand()
     {
-        await PhotoService.Instance.ReadExifData(InputPaths[0]);
+        await PhotoService.Instance.ReadExifData(InputPaths[0], OutputPath);
     }
 }

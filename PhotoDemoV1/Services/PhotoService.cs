@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using ImageMagick;
 
 namespace PhotoDemoV1.Services;
 
@@ -21,11 +22,12 @@ public sealed class PhotoService
 
     public Dictionary<string, PhotoExif> PhotoExifs { get; set; } = [];
 
-    public Task ReadExifData(string foldrPath)
+    public Task ReadExifData(string inputFoldrPath, string outputFoldrPath)
     {
-        var imagePaths = System.IO.Directory.EnumerateFiles(foldrPath, ".", SearchOption.AllDirectories);
+        List<string>? imagePaths = System.IO.Directory.EnumerateFiles(inputFoldrPath, ".", SearchOption.AllDirectories).ToList();
 
-        foreach (var imagePath in imagePaths)
+        //多线程处理
+        imagePaths.AsParallel().ForAll(imagePath =>
         {
             PhotoExif photo = new();
             try
@@ -35,6 +37,8 @@ public sealed class PhotoService
 
                 photo.Make = directories[0].GetDescription(ExifDirectoryBase.TagMake);
                 photo.Model = directories[0].GetDescription(ExifDirectoryBase.TagModel);
+
+                photo.Resolution = (directories[2].GetDescription(ExifDirectoryBase.TagImageWidth), directories[2].GetDescription(ExifDirectoryBase.TagImageHeight));
 
                 photo.LensMake = directories[5].GetDescription(ExifDirectoryBase.TagLensMake);
                 photo.LensModel = directories[5].GetDescription(ExifDirectoryBase.TagLensModel);
@@ -46,90 +50,58 @@ public sealed class PhotoService
                 photo.ExposureProgram = directories[5].GetDescription(ExifDirectoryBase.TagExposureProgram);
                 photo.WhiteBalance = directories[5].GetDescription(ExifDirectoryBase.TagWhiteBalance);
 
-                //photo.Resolution = (directories[5].GetDescription(ExifDirectoryBase.TagImageHeight), directories[5].GetDescription(ExifDirectoryBase.TagImageWidth));
                 PhotoExifs.Add(imagePath, photo);
             }
-            catch (ImageProcessingException)
+            catch (ImageProcessingException e)
             {
                 Console.WriteLine("不支持的图片格式或损坏的文件：" + imagePath);
+                throw new ImageProcessingException(e.Message);
             }
             catch (Exception ex)
             {
                 Console.WriteLine("发生错误：" + ex.Message);
             }
-        }
+            AddBorder(imagePath, outputFoldrPath);
+        });
+
         return Task.CompletedTask;
     }
 
-    public void PhotoProcessor(string foldPath)
+    public Task AddBorder(string inputPath, string outputPath)
     {
-        //1. 在照片的原路径下创建新文件夹
-        string copyFolderPath = Path.Combine(foldPath, "CopiedPhotos");
-        System.IO.Directory.CreateDirectory(copyFolderPath);
+        string fileName = Path.GetFileName(inputPath);
 
-        //2. 将照片复制到新文件夹中
-        var imageFiles = System.IO.Directory.EnumerateFiles(foldPath, "*.*", SearchOption.AllDirectories);
-        foreach (var image in imageFiles)
+        int leftPx = 120, rightPx = 120, topPx = 120;
+        int bottomPx = 360;
+
+        using var image = new MagickImage(inputPath, MagickFormat.Jpg);
+
+        // 不压缩
+        image.SetCompression(CompressionMethod.NoCompression);
+        image.Quality = 100;
+
+        //保存EXIF信息
+        IExifProfile? originalExif = image.GetExifProfile();
+
+        // 计算新的宽度和高度
+        int newWidth = image.Width + leftPx + rightPx;
+        int newHeight = image.Height + topPx + bottomPx;
+
+        // 创建新的画布
+        using var newImage = new MagickImage(MagickColors.White, newWidth, newHeight);
+
+        // 将原始图片绘制到新画布上
+        newImage.Composite(image, leftPx, topPx, CompositeOperator.Over);
+
+        // 如果原始图像有EXIF信息，将其添加到处理后的图像
+        if (originalExif != null)
         {
-            string fileName = Path.GetFileName(image) + ".Copy";
-            string destFile = Path.Combine(copyFolderPath, fileName);
-            File.Copy(image, destFile, true);
+            newImage.SetProfile(originalExif);
         }
 
-        //3.添加边框并显示Exif信息
-        var copyImageFiles = System.IO.Directory.EnumerateFiles(copyFolderPath, "*.*", SearchOption.AllDirectories);
-        foreach (var image in copyImageFiles)
-        {
+        // 保存或处理新图片
+        newImage.Write(Path.Combine(outputPath, fileName), MagickFormat.Jpg);
 
-        }
-    }
-
-    RenderTargetBitmap AddBorder(Bitmap bitmap, (string? Height, string? Width) Resolution)
-    {
-        double borderScale = 1.0;
-        double bottomBorderScale = 1.0;
-
-        //计算边框宽度，使其与原始图片的比例保持一致
-        int borderWidth = (int)(bitmap.PixelSize.Width * borderScale);
-        int bottomBorderWidth = (int)(bitmap.PixelSize.Height * bottomBorderScale);
-
-        //创建一个新的RenderTargetBitmap, 考虑边框的大小
-        var renderTarget = new RenderTargetBitmap(
-            new Avalonia.PixelSize(bitmap.PixelSize.Width + 2 * borderWidth,
-                                           bitmap.PixelSize.Height + 2 * borderWidth + bottomBorderWidth));
-
-        using var ctx = renderTarget.CreateDrawingContext();
-        //绘制原始图片
-        Rect sourRect = new(0, 0, bitmap.PixelSize.Width, bitmap.PixelSize.Height);
-        Rect targetRect = new(borderWidth, borderWidth, bitmap.PixelSize.Width, bitmap.PixelSize.Height);
-        ctx.DrawImage(bitmap, sourRect, targetRect);
-
-        //绘制边框
-        SolidColorBrush borderBrush = new(Colors.Black);
-
-        // 上边框
-        ctx.FillRectangle(borderBrush, new Rect(0, 0, renderTarget.PixelSize.Width, borderWidth));
-
-        // 左边框
-        ctx.FillRectangle(borderBrush, new Rect(0, 0, borderWidth, renderTarget.PixelSize.Height));
-
-        // 右边框
-        ctx.FillRectangle(borderBrush, new Rect(renderTarget.PixelSize.Width - borderWidth, 0, borderWidth, renderTarget.PixelSize.Height));
-
-        // 下边框
-        ctx.FillRectangle(borderBrush, new Rect(0, renderTarget.PixelSize.Height - bottomBorderWidth, renderTarget.PixelSize.Width, bottomBorderWidth));
-
-        return renderTarget;
-    }
-
-    void DrawOnBorder(RenderTargetBitmap framedPhoto, Dictionary<string, PhotoExif> photoExifs)
-    {
-
-
-    }
-
-    async Task SaveToFileAsync(IBitmapImpl bitmap, string filePath)
-    {
-
+        return Task.CompletedTask;
     }
 }

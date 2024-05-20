@@ -73,10 +73,23 @@ public sealed class PhotoExif
     /// <summary>
     /// 分辨率
     /// </summary>
-    public (string? Height, string? Width) Resolution { get; set; }
+    public (string? Width, string? Height) Resolution { get; set; }
 
     /// <summary>
     /// GPS
     /// </summary>
     public (string? Latitude, string? Longitude) GPS { get; set; }
+}
+
+public enum PhotoFormat
+{
+    NEF,
+
+    ARW,
+
+    JPG,
+
+    JPEG,
+
+    PNG,
 }
